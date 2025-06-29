@@ -86,7 +86,8 @@
         }
         .image-placeholder {
             width: 100%;
-            height: 300px; /* Fixed height for consistency */
+            height: auto; /* Changed from fixed height */
+            max-height: 300px; /* Max height to maintain layout */
             background-color: #e0e0e0;
             display: flex;
             align-items: center;
@@ -96,11 +97,12 @@
             text-align: center;
             border-radius: 0.5rem;
             overflow: hidden; /* Ensure image fits */
+            cursor: pointer; /* Indicate clickable */
         }
         .image-placeholder img {
             width: 100%;
-            height: 100%;
-            object-fit: cover; /* Cover the area, crop if necessary */
+            height: auto; /* Let height adjust based on aspect ratio */
+            object-fit: contain; /* Changed from cover to contain */
         }
         /* Floating navigation buttons */
         .floating-nav {
@@ -144,6 +146,126 @@
                 border-radius: 50%; /* Make them circular */
             }
         }
+        /* Style for map link button */
+        .map-link-btn {
+            display: inline-flex; /* Use flex to align icon and text */
+            align-items: center;
+            gap: 0.5rem; /* Space between icon and text */
+            color: #4a4a4a; /* Darker text for contrast */
+            border: 1px solid #d1d5db; /* Light gray border */
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem; /* Slightly rounded corners */
+            text-decoration: none;
+            transition: all 0.2s ease-in-out;
+            font-weight: 500;
+        }
+        .map-link-btn:hover {
+            background-color: #f3f4f6; /* Light gray background on hover */
+            border-color: #9ca3af; /* Darker border on hover */
+            color: #1f2937; /* Darker text on hover */
+        }
+        .map-link-btn svg {
+            width: 1.25rem; /* Icon size */
+            height: 1.25rem; /* Icon size */
+            fill: currentColor; /* Inherit color from parent */
+        }
+
+        /* Gallery Modal Styles */
+        .gallery-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001; /* Higher than message box */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .gallery-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .gallery-modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gallery-modal-content img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* Ensure entire image is visible */
+            border-radius: 0.5rem;
+        }
+        .gallery-nav-btn, .gallery-close-btn {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 9999px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1; /* Remove extra line height for icon */
+        }
+        .gallery-nav-btn:hover, .gallery-close-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        .gallery-nav-btn.prev {
+            left: 1rem;
+        }
+        .gallery-nav-btn.next {
+            right: 1rem;
+        }
+        .gallery-close-btn {
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.2rem;
+            padding: 0.5rem 0.8rem;
+            border-radius: 50%;
+        }
+
+        /* Music Player Styles */
+        .music-player {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 950; /* Above nav buttons, below modals */
+            background-color: rgba(139, 92, 246, 0.8); /* Darker purple with transparency */
+            border-radius: 9999px;
+            padding: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .music-player button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+        .music-player button:hover {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body class="antialiased leading-normal">
@@ -156,10 +278,40 @@
         <button id="messageBoxClose" class="btn-primary">Tutup</button>
     </div>
 
+    <!-- Gallery Modal -->
+    <div id="galleryModal" class="gallery-modal">
+        <div class="gallery-modal-content">
+            <img id="galleryImage" src="" alt="Gallery Image">
+            <button id="galleryPrevBtn" class="gallery-nav-btn prev">&larr;</button>
+            <button id="galleryNextBtn" class="gallery-nav-btn next">&rarr;</button>
+            <button id="galleryCloseBtn" class="gallery-close-btn">X</button>
+        </div>
+    </div>
+
+    <!-- Music Player -->
+    <div class="music-player">
+        <audio id="backgroundMusic" loop>
+            <!-- Ganti URL ini dengan link MP3 Anda -->
+            <source src="https://github.com/kacong28/undangansuci/blob/main/img/urlINSTRUMEN CINTA TERAKHIR.mp3?raw=true" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <button id="playPauseBtn">
+            <!-- Play icon -->
+            <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" style="display: block;">
+                <path fill="currentColor" d="M8 5v14l11-7z"/>
+            </svg>
+            <!-- Pause icon -->
+            <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" style="display: none;">
+                <path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+        </button>
+    </div>
+
+
     <!-- Hero Section -->
     <section id="hero" class="relative h-screen flex items-center justify-center text-center">
         <!-- Menggunakan nama file yang diunggah langsung ke platform -->
-        <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci1-Picsart-AiImageEnhancer.jpg?raw=true" alt="Foto Mempelai Suci dan Izam" class="absolute inset-0 w-full h-full object-cover z-0" onerror="this.onerror=null;this.src='https://github.com/kacong28/undangansuci/blob/main/img/suci1-Picsart-AiImageEnhancer.jpg?raw=true';"/>
+        <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci1-Picsart-AiImageEnhancer.jpg?raw=true" alt="Foto Mempelai Suci dan Izam" class="absolute inset-0 w-full h-full object-cover object-top z-0" onerror="this.onerror=null;this.src='https://github.com/kacong28/undangansuci/blob/main/img/suci1-Picsart-AiImageEnhancer.jpg?raw=true';"/>
 
         <div class="absolute inset-0 bg-black opacity-40 rounded-xl z-10"></div>
         
@@ -168,7 +320,7 @@
             <h4 class="text-xl md:text-2xl font-medium mb-2">Dengan Hormat Mengundang Anda ke</h4>
             <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">Pernikahan</h1>
             <h2 class="text-5xl md:text-7xl font-bold mb-6 italic">Suci & Izam</h2>
-            <p class="text-lg md:text-xl font-light">Sabtu, 27 Juli 2025</p>
+            <p class="text-lg md:text-xl font-light">Minggu, 27 Juli 2025</p>
             <!-- "Lihat Detail" button for DESKTOP/larger screens, hidden on smaller screens -->
             <a href="#details" class="btn-primary mt-8 inline-block hidden sm:inline-block">Lihat Detail</a>
         </div>
@@ -185,12 +337,16 @@
                 <!-- Akad Nikah -->
                 <div class="card text-center">
                     <h3 class="text-2xl font-semibold mb-4 text-gray-700">Akad Nikah</h3>
-                    <p class="text-lg mb-2 text-gray-600">Sabtu, 27 Juli 2025</p>
+                    <p class="text-lg mb-2 text-gray-600">Minggu, 27 Juli 2025</p>
                     <p class="text-lg mb-4 text-gray-600">Pukul: 07.00 WIB</p>
                     <p class="text-md text-gray-500">Bertempat di:</p>
                     <p class="text-md text-gray-500">Rumah Bpk. Salim</p>
+                    <p class="text-md text-gray-500">RT/RW 02/03 Kecamatan Pohjentrek Pasuruan</p>
                     <p class="text-md text-gray-500">Dusun Jalan Desa Tidu</p>
-                    <a href="https://maps.app.goo.gl/YourGoogleMapsLink" target="_blank" class="text-blue-500 hover:underline mt-4 inline-block">Lihat di Google Maps</a>
+                    <a href="https://maps.app.goo.gl/8EGonr7kv1KVYGnq6" target="_blank" class="map-link-btn mt-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                        Lihat di Google Maps
+                    </a>
                 </div>
                 <!-- Resepsi / Ngunduh Mantu -->
                 <div class="card text-center">
@@ -200,8 +356,11 @@
                     <p class="text-md text-gray-500">Bertempat di:</p>
                     <p class="text-md text-gray-500">Dusun Jelan Desa Tidu</p>
                     <p class="text-md text-gray-500">RT/RW 02/03 Kecamatan Pohjentrek Pasuruan</p>
-                    <p class="text-md text-gray-500 mt-2">Hiburan: Sound Sistem</p>
-                    <a href="https://maps.app.goo.gl/YourGoogleMapsLink" target="_blank" class="text-blue-500 hover:underline mt-4 inline-block">Lihat di Google Maps</a>
+                    <p class="text-md text-gray-500">Hiburan: Sound Sistem</p>
+                    <a href="https://maps.app.goo.gl/8EGonr7kv1KVYGnq6" target="_blank" class="map-link-btn mt-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                        Lihat di Google Maps
+                    </a>
                 </div>
             </div>
         </div>
@@ -213,14 +372,14 @@
             <h2 class="text-3xl md:text-4xl section-title text-center mb-12">Foto Mempelai</h2>
             <div class="grid md:grid-cols-2 gap-8 md:gap-12">
                 <div class="card">
-                    <div class="image-placeholder">
-                        <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci2-Picsart-AiImageEnhancer.jpg?raw=true" alt="Foto Mempelai 1" onerror="this.onerror=null;this.src='https://github.com/kacong28/undangansuci/blob/main/img/suci2-Picsart-AiImageEnhancer.jpg?raw=true';" />
+                    <div class="image-placeholder gallery-item" data-src="https://github.com/kacong28/undangansuci/blob/main/img/img001.jpg?raw=true">
+                        <img src="https://github.com/kacong28/undangansuci/blob/main/img/img001.jpg?raw=true" alt="Momen Berdua" onerror="this.onerror=null;this.src='https://placehold.co/600x400/a78bfa/ffffff?text=Error+Loading+Image';" />
                     </div>
                     <p class="text-center text-gray-600 mt-4">Momen Berdua</p>
                 </div>
                 <div class="card">
-                    <div class="image-placeholder">
-                        <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci3-Picsart-AiImageEnhancer.jpg?raw=true" alt="Foto Mempelai 2" onerror="this.onerror=null;this.src='https://github.com/kacong28/undangansuci/blob/main/img/suci3-Picsart-AiImageEnhancer.jpg?raw=true';" />
+                    <div class="image-placeholder gallery-item" data-src="https://github.com/kacong28/undangansuci/blob/main/img/suci2-Picsart-AiImageEnhancer.jpg?raw=true">
+                        <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci2-Picsart-AiImageEnhancer.jpg?raw=true" alt="Kisah Cinta Kami" onerror="this.onerror=null;this.src='https://placehold.co/600x400/8b5cf6/ffffff?text=Error+Loading+Image';" />
                     </div>
                     <p class="text-center text-gray-600 mt-4">Kisah Cinta Kami</p>
                 </div>
@@ -234,22 +393,22 @@
             <h2 class="text-3xl md:text-4xl section-title text-center mb-12">Dekorasi & Suasana</h2>
             <div class="grid md:grid-cols-3 gap-8 md:gap-12">
                 <div class="card">
-                    <div class="image-placeholder">
-                        <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci1-Picsart-AiImageEnhancer.jpg?raw=true" alt="Dekorasi 1" onerror="this.onerror=null;this.src='https://github.com/kacong28/undangansuci/blob/main/img/suci1-Picsart-AiImageEnhancer.jpg?raw=true';" />
+                    <div class="image-placeholder gallery-item" data-src="https://github.com/kacong28/undangansuci/blob/main/img/suci3-Picsart-AiImageEnhancer.jpg?raw=true">
+                        <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci3-Picsart-AiImageEnhancer.jpg?raw=true" alt="Dekorasi Area Resepsi" onerror="this.onerror=null;this.src='https://placehold.co/400x300/dcdcdc/333?text=Error+Loading+Image';" />
                     </div>
-                    <p class="text-center text-gray-600 mt-4">Area Resepsi</p>
+                    <p class="text-center text-gray-600 mt-4">Suasana Resepsi</p>
                 </div>
                 <div class="card">
-                    <div class="image-placeholder">
-                        <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci2-Picsart-AiImageEnhancer.jpg?raw=true" alt="Dekorasi 2" onerror="this.onerror=null;this.src='https://github.com/kacong28/undangansuci/blob/main/img/suci2-Picsart-AiImageEnhancer.jpg?raw=true';" />
+                    <div class="image-placeholder gallery-item" data-src="https://github.com/kacong28/undangansuci/blob/main/img/img002.jpg?raw=true">
+                        <img src="https://github.com/kacong28/undangansuci/blob/main/img/img002.jpg?raw=true" alt="Dekorasi Meja Tamu" onerror="this.onerror=null;this.src='https://placehold.co/400x300/c0c0c0/333?text=Error+Loading+Image';" />
                     </div>
-                    <p class="text-center text-gray-600 mt-4">Meja Tamu</p>
+                    <p class="text-center text-gray-600 mt-4">Detail Meja</p>
                 </div>
                 <div class="card">
-                    <div class="image-placeholder">
-                        <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci3-Picsart-AiImageEnhancer.jpg?raw=true" alt="Dekorasi 3" onerror="this.onerror=null;this.src='https://github.com/kacong28/undangansuci/blob/main/img/suci3-Picsart-AiImageEnhancer.jpg?raw=true';" />
+                    <div class="image-placeholder gallery-item" data-src="https://github.com/kacong28/undangansuci/blob/main/img/suci2-Picsart-AiImageEnhancer.jpg?raw=true">
+                        <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci2-Picsart-AiImageEnhancer.jpg?raw=true" alt="Dekorasi Panggung Pelaminan" onerror="this.onerror=null;this.src='https://placehold.co/400x300/a0a0a0/333?text=Error+Loading+Image';" />
                     </div>
-                    <p class="text-center text-gray-600 mt-4">Panggung Pelaminan</p>
+                    <p class="text-center text-gray-600 mt-4">Pelaminan Impian</p>
                 </div>
             </div>
         </div>
@@ -373,9 +532,85 @@
             document.getElementById('rsvp-message').value = '';
         });
 
+        // Gallery functionality
+        const galleryModal = document.getElementById('galleryModal');
+        const galleryImage = document.getElementById('galleryImage');
+        const galleryPrevBtn = document.getElementById('galleryPrevBtn');
+        const galleryNextBtn = document.getElementById('galleryNextBtn');
+        const galleryCloseBtn = document.getElementById('galleryCloseBtn');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        let currentImageIndex = 0;
+        const allGalleryImages = []; // Array to store all image URLs for navigation
+
+        // Populate allGalleryImages from existing gallery items
+        galleryItems.forEach(item => {
+            const imgElement = item.querySelector('img');
+            if (imgElement && imgElement.src) {
+                allGalleryImages.push(imgElement.src);
+            } else if (item.dataset.src) { // Fallback to data-src if img.src is missing
+                 allGalleryImages.push(item.dataset.src);
+            }
+        });
+
+        function openGallery(index) {
+            currentImageIndex = index;
+            showImage(currentImageIndex);
+            galleryModal.classList.add('show');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling body when modal is open
+        }
+
+        function closeGallery() {
+            galleryModal.classList.remove('show');
+            document.body.style.overflow = ''; // Restore body scrolling
+        }
+
+        function showImage(index) {
+            if (index < 0) {
+                currentImageIndex = allGalleryImages.length - 1;
+            } else if (index >= allGalleryImages.length) {
+                currentImageIndex = 0;
+            }
+            galleryImage.src = allGalleryImages[currentImageIndex];
+        }
+
+        function nextImage() {
+            currentImageIndex++;
+            showImage(currentImageIndex);
+        }
+
+        function prevImage() {
+            currentImageIndex--;
+            showImage(currentImageIndex);
+        }
+
+        // Add event listeners for gallery items
+        galleryItems.forEach((item, index) => {
+            item.addEventListener('click', () => openGallery(index));
+        });
+
+        // Add event listeners for gallery modal buttons
+        galleryCloseBtn.addEventListener('click', closeGallery);
+        galleryPrevBtn.addEventListener('click', prevImage);
+        galleryNextBtn.addEventListener('click', nextImage);
+
+        // Close modal when clicking outside the image content
+        galleryModal.addEventListener('click', (e) => {
+            if (e.target === galleryModal) {
+                closeGallery();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && galleryModal.classList.contains('show')) {
+                closeGallery();
+            }
+        });
+
+
         // Get all sections with IDs to create dynamic navigation
         const sections = ['hero', 'details', 'couple-photos', 'decoration-photos', 'our-story', 'rsvp'];
-        let currentSectionIndex = 0;
+        let currentSectionNavIndex = 0; // Renamed to avoid conflict with gallery index
 
         function updateNavButtons() {
             const prevBtn = document.getElementById('navPrevBtn');
@@ -393,7 +628,7 @@
             });
 
             if (visibleSection) {
-                currentSectionIndex = sections.indexOf(visibleSection);
+                currentSectionNavIndex = sections.indexOf(visibleSection);
             } else {
                 // Fallback: if no section is fully visible, use scroll position
                 const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -410,24 +645,24 @@
                         }
                     }
                 });
-                currentSectionIndex = closestSectionIndex;
+                currentSectionNavIndex = closestSectionIndex;
             }
 
             // If on the hero section, hide both floating navigation buttons
-            if (currentSectionIndex === 0) {
+            if (currentSectionNavIndex === 0) {
                 prevBtn.style.display = 'none';
                 nextBtn.style.display = 'none';
             } else {
                 // Otherwise, show/hide floating navigation buttons based on position
-                if (currentSectionIndex > 0) {
-                    prevBtn.href = '#' + sections[currentSectionIndex - 1];
+                if (currentSectionNavIndex > 0) {
+                    prevBtn.href = '#' + sections[currentSectionNavIndex - 1];
                     prevBtn.style.display = 'flex';
                 } else {
                     prevBtn.style.display = 'none'; // Hide if at the first section
                 }
 
-                if (currentSectionIndex < sections.length - 1) {
-                    nextBtn.href = '#' + sections[currentSectionIndex + 1];
+                if (currentSectionNavIndex < sections.length - 1) {
+                    nextBtn.href = '#' + sections[currentSectionNavIndex + 1];
                     nextBtn.style.display = 'flex';
                 } else {
                     nextBtn.style.display = 'none'; // Hide if at the last section
@@ -455,6 +690,58 @@
         // Update buttons on scroll and load
         window.addEventListener('scroll', updateNavButtons);
         window.addEventListener('load', updateNavButtons);
+
+        // Music Play/Pause functionality
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+
+        // Function to attempt playing music
+        function tryPlayMusic() {
+            backgroundMusic.play()
+                .then(() => {
+                    // Autoplay started successfully
+                    playIcon.style.display = 'none';
+                    pauseIcon.style.display = 'block';
+                })
+                .catch(error => {
+                    // Autoplay failed (e.g., due to browser policy)
+                    console.log('Autoplay was prevented by the browser. User must interact to play music.', error);
+                    playIcon.style.display = 'block';
+                    pauseIcon.style.display = 'none';
+                    // Show a message to the user that music can be played by clicking the button
+                    showMessageBox('Musik Latar Belakang', 'Browser Anda mungkin memblokir pemutaran otomatis. Silakan klik ikon musik di kanan atas untuk memutar atau menghentikan.');
+                });
+        }
+
+        // Try to play music on load (will likely be blocked by browsers, but good for attempting)
+        window.addEventListener('load', tryPlayMusic);
+
+        // Toggle play/pause on button click
+        playPauseBtn.addEventListener('click', () => {
+            if (backgroundMusic.paused) {
+                backgroundMusic.play();
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = 'block';
+            } else {
+                backgroundMusic.pause();
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+            }
+        });
+
+        // Update icon if music ends or is manually paused by browser/system
+        backgroundMusic.addEventListener('pause', () => {
+            playIcon.style.display = 'block';
+            pauseIcon.style.display = 'none';
+        });
+
+        backgroundMusic.addEventListener('play', () => {
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'block';
+        });
+
     </script>
 </body>
 </html>
