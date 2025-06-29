@@ -272,13 +272,21 @@
 
     <!-- Message Box Element -->
     <div id="messageBoxOverlay" class="message-box-overlay"></div>
-    <div id="messageBox" class="message-box">
+    <div id="messageBox" class="message-box" style="display: none;">
         <h3 id="messageBoxTitle" class="text-2xl font-bold mb-4 text-gray-800"></h3>
         <p id="messageBoxContent" class="text-gray-600 mb-6"></p>
-        <button id="messageBoxClose" class="btn-primary">Tutup</button>
+        <!-- Generic Buttons (hidden by default, shown for non-music messages) -->
+        <div id="genericMessageBoxButtons" class="flex flex-col gap-4 w-full" style="display: none;">
+            <button id="messageBoxCloseGeneric" class="btn-primary">Tutup</button>
+        </div>
+        <!-- Music Specific Buttons (hidden by default, shown when autoplay is blocked) -->
+        <div id="musicMessageBoxButtons" class="flex flex-col gap-4 w-full" style="display: none;">
+            <button id="msgBoxPlayMusicBtn" class="btn-primary">Putar Musik</button>
+            <button id="msgBoxCloseMusicBtn" class="btn-primary !bg-gray-200 !text-gray-700 hover:!bg-gray-300">Tutup</button>
+        </div>
     </div>
 
-    <!-- Gallery Modal -->
+
     <div id="galleryModal" class="gallery-modal">
         <div class="gallery-modal-content">
             <img id="galleryImage" src="" alt="Gallery Image">
@@ -290,9 +298,8 @@
 
     <!-- Music Player -->
     <div class="music-player">
-        <audio id="backgroundMusic" loop>
-            <!-- Ganti URL ini dengan link MP3 Anda -->
-            <source src="https://github.com/kacong28/undangansuci/blob/main/img/urlINSTRUMEN CINTA TERAKHIR.mp3?raw=true" type="audio/mpeg">
+        <audio id="backgroundMusic" loop preload="auto">
+            <source src="https://akad.in/storage/song/urlINSTRUMEN%20CINTA%20TERAKHIR" type="audio/mp3">
             Your browser does not support the audio element.
         </audio>
         <button id="playPauseBtn">
@@ -310,15 +317,15 @@
 
     <!-- Hero Section -->
     <section id="hero" class="relative h-screen flex items-center justify-center text-center">
-        <!-- Menggunakan nama file yang diunggah langsung ke platform -->
-        <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci1-Picsart-AiImageEnhancer.jpg?raw=true" alt="Foto Mempelai Suci dan Izam" class="absolute inset-0 w-full h-full object-cover object-top z-0" onerror="this.onerror=null;this.src='https://github.com/kacong28/undangansuci/blob/main/img/suci1-Picsart-AiImageEnhancer.jpg?raw=true';"/>
+        <!-- Menggunakan URL gambar utama dari GitHub -->
+        <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci1-Picsart-AiImageEnhancer.jpg?raw=true" alt="Foto Mempelai Suci dan Izam" class="absolute inset-0 w-full h-full object-cover object-top z-0" onerror="this.onerror=null;this.src='https://placehold.co/1200x800/dcdcdc/333?text=Error+Loading+Image';"/>
 
         <div class="absolute inset-0 bg-black opacity-40 rounded-xl z-10"></div>
         
         <!-- Main Text Content for Hero Section (shifted up on mobile portrait, centered on mobile landscape/desktop) -->
         <div class="relative z-20 text-white p-6 rounded-xl bg-opacity-70 -translate-y-48 sm:translate-y-0">
-            <h4 class="text-xl md:text-2xl font-medium mb-2">Dengan Hormat Mengundang Anda ke</h4>
-            <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">Pernikahan</h1>
+            <h4 class="text-xl md:text-2xl font-medium mb-2">Dengan segala kerendahan hati, Kami Mengundang Anda ke</h4>
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">Resepsi Pernikahan</h1>
             <h2 class="text-5xl md:text-7xl font-bold mb-6 italic">Suci & Izam</h2>
             <p class="text-lg md:text-xl font-light">Minggu, 27 Juli 2025</p>
             <!-- "Lihat Detail" button for DESKTOP/larger screens, hidden on smaller screens -->
@@ -340,9 +347,9 @@
                     <p class="text-lg mb-2 text-gray-600">Minggu, 27 Juli 2025</p>
                     <p class="text-lg mb-4 text-gray-600">Pukul: 07.00 WIB</p>
                     <p class="text-md text-gray-500">Bertempat di:</p>
-                    <p class="text-md text-gray-500">Rumah Bpk. Salim</p>
-                    <p class="text-md text-gray-500">RT/RW 02/03 Kecamatan Pohjentrek Pasuruan</p>
-                    <p class="text-md text-gray-500">Dusun Jalan Desa Tidu</p>
+                    <p class="text-md text-gray-500">Kediaman Bapak Salim</p>
+                    <p class="text-md text-gray-500">Dusun Jalan, Desa Tidu</p>
+                    <p class="text-md text-gray-500">RT/RW 02/03 Kecamatan Pohjentrek, Pasuruan</p>
                     <a href="https://maps.app.goo.gl/8EGonr7kv1KVYGnq6" target="_blank" class="map-link-btn mt-4">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                         Lihat di Google Maps
@@ -350,13 +357,13 @@
                 </div>
                 <!-- Resepsi / Ngunduh Mantu -->
                 <div class="card text-center">
-                    <h3 class="text-2xl font-semibold mb-4 text-gray-700">Resepsi Pernikahan / Ngunduh Mantu</h3>
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-700">Resepsi Pernikahan & Ngunduh Mantu</h3>
                     <p class="text-lg mb-2 text-gray-600">Minggu, 27 Juli 2025</p>
-                    <p class="text-lg mb-4 text-gray-600">Pukul: 18.00 - Selesai WIB</p>
+                    <p class="text-lg mb-4 text-gray-600">Pukul: 18.00 WIB - Selesai</p>
                     <p class="text-md text-gray-500">Bertempat di:</p>
-                    <p class="text-md text-gray-500">Dusun Jelan Desa Tidu</p>
-                    <p class="text-md text-gray-500">RT/RW 02/03 Kecamatan Pohjentrek Pasuruan</p>
-                    <p class="text-md text-gray-500">Hiburan: Sound Sistem</p>
+                    <p class="text-md text-gray-500">Dusun Jelan, Desa Tidu</p>
+                    <p class="text-md text-gray-500">RT/RW 02/03 Kecamatan Pohjentrek, Pasuruan</p>
+                    <p class="text-md text-gray-500 mt-2">Diiringi: Hiburan Sound System</p>
                     <a href="https://maps.app.goo.gl/8EGonr7kv1KVYGnq6" target="_blank" class="map-link-btn mt-4">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                         Lihat di Google Maps
@@ -369,19 +376,19 @@
     <!-- Couple Photos Section -->
     <section id="couple-photos" class="py-16 md:py-24 bg-gray-50">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl section-title text-center mb-12">Foto Mempelai</h2>
+            <h2 class="text-3xl md:text-4xl section-title text-center mb-12">Galeri Foto</h2>
             <div class="grid md:grid-cols-2 gap-8 md:gap-12">
                 <div class="card">
                     <div class="image-placeholder gallery-item" data-src="https://github.com/kacong28/undangansuci/blob/main/img/img001.jpg?raw=true">
                         <img src="https://github.com/kacong28/undangansuci/blob/main/img/img001.jpg?raw=true" alt="Momen Berdua" onerror="this.onerror=null;this.src='https://placehold.co/600x400/a78bfa/ffffff?text=Error+Loading+Image';" />
                     </div>
-                    <p class="text-center text-gray-600 mt-4">Momen Berdua</p>
+                    <p class="text-center text-gray-600 mt-4">Cinta Tumbuh Bersemi</p>
                 </div>
                 <div class="card">
                     <div class="image-placeholder gallery-item" data-src="https://github.com/kacong28/undangansuci/blob/main/img/suci2-Picsart-AiImageEnhancer.jpg?raw=true">
                         <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci2-Picsart-AiImageEnhancer.jpg?raw=true" alt="Kisah Cinta Kami" onerror="this.onerror=null;this.src='https://placehold.co/600x400/8b5cf6/ffffff?text=Error+Loading+Image';" />
                     </div>
-                    <p class="text-center text-gray-600 mt-4">Kisah Cinta Kami</p>
+                    <p class="text-center text-gray-600 mt-4">Janji Suci</p>
                 </div>
             </div>
         </div>
@@ -390,25 +397,25 @@
     <!-- Decoration Section -->
     <section id="decoration-photos" class="py-16 md:py-24 bg-white">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl section-title text-center mb-12">Dekorasi & Suasana</h2>
+            <h2 class="text-3xl md:text-4xl section-title text-center mb-12">Momen Indah Kami</h2>
             <div class="grid md:grid-cols-3 gap-8 md:gap-12">
                 <div class="card">
                     <div class="image-placeholder gallery-item" data-src="https://github.com/kacong28/undangansuci/blob/main/img/suci3-Picsart-AiImageEnhancer.jpg?raw=true">
                         <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci3-Picsart-AiImageEnhancer.jpg?raw=true" alt="Dekorasi Area Resepsi" onerror="this.onerror=null;this.src='https://placehold.co/400x300/dcdcdc/333?text=Error+Loading+Image';" />
                     </div>
-                    <p class="text-center text-gray-600 mt-4">Suasana Resepsi</p>
+                    <p class="text-center text-gray-600 mt-4">Dekorasi Anggun</p>
                 </div>
                 <div class="card">
                     <div class="image-placeholder gallery-item" data-src="https://github.com/kacong28/undangansuci/blob/main/img/img002.jpg?raw=true">
                         <img src="https://github.com/kacong28/undangansuci/blob/main/img/img002.jpg?raw=true" alt="Dekorasi Meja Tamu" onerror="this.onerror=null;this.src='https://placehold.co/400x300/c0c0c0/333?text=Error+Loading+Image';" />
                     </div>
-                    <p class="text-center text-gray-600 mt-4">Detail Meja</p>
+                    <p class="text-center text-gray-600 mt-4">Sentuhan Detail</p>
                 </div>
                 <div class="card">
                     <div class="image-placeholder gallery-item" data-src="https://github.com/kacong28/undangansuci/blob/main/img/suci2-Picsart-AiImageEnhancer.jpg?raw=true">
                         <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci2-Picsart-AiImageEnhancer.jpg?raw=true" alt="Dekorasi Panggung Pelaminan" onerror="this.onerror=null;this.src='https://placehold.co/400x300/a0a0a0/333?text=Error+Loading+Image';" />
                     </div>
-                    <p class="text-center text-gray-600 mt-4">Pelaminan Impian</p>
+                    <p class="text-center text-gray-600 mt-4">Saksi Kebahagiaan</p>
                 </div>
             </div>
         </div>
@@ -420,16 +427,16 @@
             <h2 class="text-3xl md:text-4xl section-title text-center mb-12">Mempelai & Keluarga</h2>
             <div class="card max-w-2xl mx-auto text-center">
                 <h3 class="text-2xl font-semibold mb-4 text-gray-700">Wulan Suci Romadhon</h3>
-                <p class="text-lg text-gray-600 mb-6">Putri Bapak Salim & Ibu Husnul Khotimah</p>
+                <p class="text-lg text-gray-600 mb-6">Putri dari Bapak Salim & Ibu Husnul Khotimah</p>
 
                 <h3 class="text-2xl font-semibold mb-4 text-gray-700">Multazam</h3>
-                <p class="text-lg text-gray-600 mb-6">Putra Bapak Nahrowi & Ibu Alm. Khoiriyah</p>
+                <p class="text-lg text-gray-600 mb-6">Putra dari Bapak Nahrowi & Ibu Alm. Khoiriyah</p>
 
                 <p class="text-md text-gray-700 leading-relaxed mb-4">
-                    Dengan menyebut nama Allah SWT, kami berdua, Wulan Suci Romadhon dan Multazam, dengan segala kerendahan hati mengundang Bapak/Ibu/Saudara/i sekalian untuk hadir dan memberikan doa restu pada pernikahan kami.
+                    Dengan memohon rahmat dan ridho Allah SWT, kami berdua, Wulan Suci Romadhon dan Multazam, dengan segala kerendahan hati mengundang Bapak/Ibu/Saudara/i sekalian untuk hadir dan memberikan doa restu pada acara pernikahan kami.
                 </p>
                 <p class="text-md text-gray-700 leading-relaxed">
-                    Setiap kisah cinta cinta memiliki awal yang unik, dan kami bersyukur atas perjalanan yang telah kami lalui bersama. Kami siap melangkah ke babak baru dalam hidup ini, membangun keluarga yang sakinah, mawaddah, warahmah.
+                    Tiada kata yang dapat mewakili rasa syukur kami atas limpahan karunia-Nya, yang telah menyatukan hati kami dalam ikatan cinta. Kami berharap kehadiran dan doa restu Anda menjadi bagian dari lembaran baru kehidupan kami yang penuh berkah.
                 </p>
             </div>
         </div>
@@ -440,7 +447,7 @@
         <div class="container mx-auto px-4">
             <h2 class="text-3xl md:text-4xl section-title text-center mb-12">Konfirmasi Kehadiran</h2>
             <div class="card max-w-xl mx-auto">
-                <p class="text-center text-gray-600 mb-6">Mohon konfirmasi kehadiran Anda sebelum 20 Juli 2025.</p>
+                <p class="text-center text-gray-600 mb-6">Mohon konfirmasi kehadiran Anda selambat-lambatnya pada 20 Juli 2025.</p>
                 <div class="space-y-6">
                     <div>
                         <label for="rsvp-name" class="block text-gray-700 text-sm font-semibold mb-2">Nama Lengkap Anda</label>
@@ -476,9 +483,9 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-12 text-center rounded-t-xl>
+    <footer class="bg-gray-800 text-white py-12 text-center rounded-t-xl">
         <div class="container mx-auto px-4">
-            <p class="text-lg font-light mb-4">Terima Kasih Atas Doa dan Restu Anda</p>
+            <p class="text-lg font-light mb-4">Atas Perhatian dan Doa Restu Anda, Kami Ucapkan Terima Kasih.</p>
             <p class="text-sm font-thin">&copy; 2025 Wulan Suci Romadhon & Multazam. Hak Cipta Dilindungi.</p>
         </div>
     </footer>
@@ -495,20 +502,52 @@
 
     <script>
         // Custom Message Box Function
-        function showMessageBox(title, message) {
+        function showMessageBox(title, message, type = 'generic') {
             const messageBox = document.getElementById('messageBox');
             const messageBoxOverlay = document.getElementById('messageBoxOverlay');
             document.getElementById('messageBoxTitle').innerText = title;
             document.getElementById('messageBoxContent').innerText = message;
+
+            const genericButtons = document.getElementById('genericMessageBoxButtons');
+            const musicButtons = document.getElementById('musicMessageBoxButtons');
+
+            if (type === 'music') {
+                genericButtons.style.display = 'none';
+                musicButtons.style.display = 'flex';
+            } else {
+                genericButtons.style.display = 'flex';
+                musicButtons.style.display = 'none';
+            }
+
             messageBox.style.display = 'flex';
             messageBoxOverlay.style.display = 'block';
         }
 
-        document.getElementById('messageBoxClose').addEventListener('click', function() {
+        function closeMessageBox() {
             document.getElementById('messageBox').style.display = 'none';
             document.getElementById('messageBoxOverlay').style.display = 'none';
+        }
+
+        // Event listener for the generic close button (for RSVP messages etc.)
+        document.getElementById('messageBoxCloseGeneric').addEventListener('click', closeMessageBox);
+
+        // Event listeners for music message box buttons
+        const msgBoxPlayMusicBtn = document.getElementById('msgBoxPlayMusicBtn');
+        const msgBoxCloseMusicBtn = document.getElementById('msgBoxCloseMusicBtn');
+
+        msgBoxPlayMusicBtn.addEventListener('click', () => {
+            backgroundMusic.play();
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'block';
+            closeMessageBox();
         });
 
+        msgBoxCloseMusicBtn.addEventListener('click', () => {
+            closeMessageBox();
+        });
+
+
+        // RSVP Submit Handler (unchanged)
         document.getElementById('submitRsvp').addEventListener('click', function() {
             const name = document.getElementById('rsvp-name').value;
             const guests = document.getElementById('rsvp-guests').value;
@@ -520,19 +559,16 @@
                 return;
             }
 
-            // In a real application, you would send this data to a server.
-            // For this example, we'll just show a success message.
             console.log('RSVP Data:', { name, guests, attendance, message });
             showMessageBox('Konfirmasi Terkirim!', 'Terima kasih atas konfirmasi kehadiran Anda. Kami menantikan kehadiran Anda di hari bahagia kami!');
 
-            // Clear the form after submission
             document.getElementById('rsvp-name').value = '';
             document.getElementById('rsvp-guests').value = '';
             document.getElementById('rsvp-attendance').value = '';
             document.getElementById('rsvp-message').value = '';
         });
 
-        // Gallery functionality
+        // Gallery functionality (unchanged, kept for reference)
         const galleryModal = document.getElementById('galleryModal');
         const galleryImage = document.getElementById('galleryImage');
         const galleryPrevBtn = document.getElementById('galleryPrevBtn');
@@ -540,14 +576,13 @@
         const galleryCloseBtn = document.getElementById('galleryCloseBtn');
         const galleryItems = document.querySelectorAll('.gallery-item');
         let currentImageIndex = 0;
-        const allGalleryImages = []; // Array to store all image URLs for navigation
+        const allGalleryImages = [];
 
-        // Populate allGalleryImages from existing gallery items
         galleryItems.forEach(item => {
             const imgElement = item.querySelector('img');
             if (imgElement && imgElement.src) {
                 allGalleryImages.push(imgElement.src);
-            } else if (item.dataset.src) { // Fallback to data-src if img.src is missing
+            } else if (item.dataset.src) {
                  allGalleryImages.push(item.dataset.src);
             }
         });
@@ -556,12 +591,12 @@
             currentImageIndex = index;
             showImage(currentImageIndex);
             galleryModal.classList.add('show');
-            document.body.style.overflow = 'hidden'; // Prevent scrolling body when modal is open
+            document.body.style.overflow = 'hidden';
         }
 
         function closeGallery() {
             galleryModal.classList.remove('show');
-            document.body.style.overflow = ''; // Restore body scrolling
+            document.body.style.overflow = '';
         }
 
         function showImage(index) {
@@ -583,45 +618,38 @@
             showImage(currentImageIndex);
         }
 
-        // Add event listeners for gallery items
         galleryItems.forEach((item, index) => {
             item.addEventListener('click', () => openGallery(index));
         });
 
-        // Add event listeners for gallery modal buttons
         galleryCloseBtn.addEventListener('click', closeGallery);
         galleryPrevBtn.addEventListener('click', prevImage);
         galleryNextBtn.addEventListener('click', nextImage);
 
-        // Close modal when clicking outside the image content
         galleryModal.addEventListener('click', (e) => {
             if (e.target === galleryModal) {
                 closeGallery();
             }
         });
 
-        // Close modal with Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && galleryModal.classList.contains('show')) {
                 closeGallery();
             }
         });
 
-
-        // Get all sections with IDs to create dynamic navigation
+        // Navigation buttons functionality (unchanged, kept for reference)
         const sections = ['hero', 'details', 'couple-photos', 'decoration-photos', 'our-story', 'rsvp'];
-        let currentSectionNavIndex = 0; // Renamed to avoid conflict with gallery index
+        let currentSectionNavIndex = 0;
 
         function updateNavButtons() {
             const prevBtn = document.getElementById('navPrevBtn');
             const nextBtn = document.getElementById('navNextBtn');
 
-            // Find the currently visible section
             const visibleSection = sections.find((id, index) => {
                 const section = document.getElementById(id);
                 if (section) {
                     const rect = section.getBoundingClientRect();
-                    // Consider a section visible if its top is within 50% of the viewport and it's mostly on screen
                     return rect.top >= 0 && rect.top <= window.innerHeight / 2 && rect.bottom > 0;
                 }
                 return false;
@@ -630,7 +658,6 @@
             if (visibleSection) {
                 currentSectionNavIndex = sections.indexOf(visibleSection);
             } else {
-                // Fallback: if no section is fully visible, use scroll position
                 const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
                 let closestSectionIndex = 0;
                 let minDistance = Infinity;
@@ -648,46 +675,41 @@
                 currentSectionNavIndex = closestSectionIndex;
             }
 
-            // If on the hero section, hide both floating navigation buttons
             if (currentSectionNavIndex === 0) {
                 prevBtn.style.display = 'none';
                 nextBtn.style.display = 'none';
             } else {
-                // Otherwise, show/hide floating navigation buttons based on position
                 if (currentSectionNavIndex > 0) {
                     prevBtn.href = '#' + sections[currentSectionNavIndex - 1];
                     prevBtn.style.display = 'flex';
                 } else {
-                    prevBtn.style.display = 'none'; // Hide if at the first section
+                    prevBtn.style.display = 'none';
                 }
 
                 if (currentSectionNavIndex < sections.length - 1) {
                     nextBtn.href = '#' + sections[currentSectionNavIndex + 1];
                     nextBtn.style.display = 'flex';
                 } else {
-                    nextBtn.style.display = 'none'; // Hide if at the last section
+                    nextBtn.style.display = 'none';
                 }
             }
         }
 
-        // Smooth scrolling for all internal navigation links (including floating buttons)
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 const targetId = this.getAttribute('href');
-                if (targetId === '#') { // Handle top of page navigation
+                if (targetId === '#') {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 } else {
                     document.querySelector(targetId).scrollIntoView({
                         behavior: 'smooth'
                     });
                 }
-                // Small delay to ensure scroll happens before updating button visibility
                 setTimeout(updateNavButtons, 600);
             });
         });
 
-        // Update buttons on scroll and load
         window.addEventListener('scroll', updateNavButtons);
         window.addEventListener('load', updateNavButtons);
 
@@ -697,26 +719,25 @@
         const playIcon = document.getElementById('playIcon');
         const pauseIcon = document.getElementById('pauseIcon');
 
-        // Function to attempt playing music
-        function tryPlayMusic() {
-            backgroundMusic.play()
-                .then(() => {
-                    // Autoplay started successfully
-                    playIcon.style.display = 'none';
-                    pauseIcon.style.display = 'block';
-                })
-                .catch(error => {
-                    // Autoplay failed (e.g., due to browser policy)
-                    console.log('Autoplay was prevented by the browser. User must interact to play music.', error);
-                    playIcon.style.display = 'block';
-                    pauseIcon.style.display = 'none';
-                    // Show a message to the user that music can be played by clicking the button
-                    showMessageBox('Musik Latar Belakang', 'Browser Anda mungkin memblokir pemutaran otomatis. Silakan klik ikon musik di kanan atas untuk memutar atau menghentikan.');
-                });
-        }
-
-        // Try to play music on load (will likely be blocked by browsers, but good for attempting)
-        window.addEventListener('load', tryPlayMusic);
+        // Autoplay attempt using DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+            if (backgroundMusic) { // Pastikan elemen audio ada
+                backgroundMusic.muted = false; // Coba batalkan mute
+                backgroundMusic.play()
+                    .then(() => {
+                        // Autoplay berhasil dimulai
+                        playIcon.style.display = 'none';
+                        pauseIcon.style.display = 'block';
+                    })
+                    .catch(error => {
+                        // Autoplay gagal (misalnya, karena kebijakan browser). Tampilkan pesan dengan opsi.
+                        console.log('Autoplay dicegah oleh browser:', error);
+                        playIcon.style.display = 'block'; // Tampilkan ikon play
+                        pauseIcon.style.display = 'none'; // Sembunyikan ikon pause
+                        showMessageBox('Musik Latar Belakang', 'Browser Anda mungkin memblokir pemutaran otomatis. Silakan klik "Putar Musik" untuk memulai atau "Tutup" untuk memutar/menghentikan secara manual dari ikon musik.', 'music');
+                    });
+            }
+        });
 
         // Toggle play/pause on button click
         playPauseBtn.addEventListener('click', () => {
