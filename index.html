@@ -266,6 +266,38 @@
         .music-player button:hover {
             transform: scale(1.1);
         }
+
+        /* RSVP List Table Styles */
+        .rsvp-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+        }
+        .rsvp-table th, .rsvp-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .rsvp-table th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+        .rsvp-table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+        .rsvp-table td {
+            color: #555;
+        }
+        .rsvp-table .status-yes {
+            color: #10b981; /* Green for 'Hadir' */
+            font-weight: 500;
+        }
+        .rsvp-table .status-no {
+            color: #ef4444; /* Red for 'Tidak Hadir' */
+            font-weight: 500;
+        }
     </style>
 </head>
 <body class="antialiased leading-normal">
@@ -275,11 +307,11 @@
     <div id="messageBox" class="message-box" style="display: none;">
         <h3 id="messageBoxTitle" class="text-2xl font-bold mb-4 text-gray-800"></h3>
         <p id="messageBoxContent" class="text-gray-600 mb-6"></p>
-        <!-- Generic Buttons (hidden by default, shown for non-music messages) -->
-        <div id="genericMessageBoxButtons" class="flex flex-col gap-4 w-full" style="display: none;">
+        <!-- Generic Buttons -->
+        <div id="genericMessageBoxButtons" class="flex flex-col gap-4 w-full">
             <button id="messageBoxCloseGeneric" class="btn-primary">Tutup</button>
         </div>
-        <!-- Music Specific Buttons (hidden by default, shown when autoplay is blocked) -->
+        <!-- Music Specific Buttons -->
         <div id="musicMessageBoxButtons" class="flex flex-col gap-4 w-full" style="display: none;">
             <button id="msgBoxPlayMusicBtn" class="btn-primary">Putar Musik</button>
             <button id="msgBoxCloseMusicBtn" class="btn-primary !bg-gray-200 !text-gray-700 hover:!bg-gray-300">Tutup</button>
@@ -299,7 +331,7 @@
     <!-- Music Player -->
     <div class="music-player">
         <audio id="backgroundMusic" loop preload="auto">
-            <source src="https://akad.in/storage/song/urlINSTRUMEN%20CINTA%20TERAKHIR" type="audio/mp3">
+            <source src="https://akad.in/storage/song/urlINSTRUMEN%20CINTA%20TERAKHIR" type="audio/mpeg">
             Your browser does not support the audio element.
         </audio>
         <button id="playPauseBtn">
@@ -318,7 +350,7 @@
     <!-- Hero Section -->
     <section id="hero" class="relative h-screen flex items-center justify-center text-center">
         <!-- Menggunakan URL gambar utama dari GitHub -->
-        <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci1-Picsart-AiImageEnhancer.jpg?raw=true" alt="Foto Mempelai Suci dan Izam" class="absolute inset-0 w-full h-full object-cover object-top z-0" onerror="this.onerror=null;this.src='https://placehold.co/1200x800/dcdcdc/333?text=Error+Loading+Image';"/>
+        <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci1-Picsart-AiImageEnhancer.jpg?raw=true" alt="Foto Mempelai Suci dan Izam" class="absolute inset-0 w-full h-full object-cover object-center z-0" onerror="this.onerror=null;this.src='https://placehold.co/1200x800/dcdcdc/333?text=Error+Loading+Image';"/>
 
         <div class="absolute inset-0 bg-black opacity-40 rounded-xl z-10"></div>
         
@@ -415,7 +447,7 @@
                     <div class="image-placeholder gallery-item" data-src="https://github.com/kacong28/undangansuci/blob/main/img/suci2-Picsart-AiImageEnhancer.jpg?raw=true">
                         <img src="https://github.com/kacong28/undangansuci/blob/main/img/suci2-Picsart-AiImageEnhancer.jpg?raw=true" alt="Dekorasi Panggung Pelaminan" onerror="this.onerror=null;this.src='https://placehold.co/400x300/a0a0a0/333?text=Error+Loading+Image';" />
                     </div>
-                    <p class="text-center text-gray-600 mt-4">Saksi Kebahagiaan</p>
+                    <p class="text-center text-gray-600 mt-4">Pelaminan Impian</p>
                 </div>
             </div>
         </div>
@@ -469,7 +501,7 @@
                         <select id="rsvp-attendance" name="attendance" class="w-full">
                             <option value="">Pilih</option>
                             <option value="yes">Ya, Saya Akan Hadir</option>
-                            <option value="no">Maaf, Tidak Bisa Hadir</option>
+                            <option value="no">Maaf, Tidak Bisa Hadar</option>
                         </select>
                     </div>
                     <div>
@@ -478,6 +510,31 @@
                     </div>
                     <button id="submitRsvp" class="btn-primary w-full">Kirim Konfirmasi</button>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RSVP List Section (Added) -->
+    <section id="rsvp-list" class="py-16 md:py-24 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl section-title text-center mb-12">Daftar Konfirmasi Kehadiran</h2>
+            <div class="card overflow-x-auto">
+                <p class="text-sm text-gray-500 mb-4" id="userIdDisplay">ID Pengguna: Memuat...</p>
+                <table class="rsvp-table">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Jumlah Tamu</th>
+                            <th>Kehadiran</th>
+                            <th>Pesan & Doa</th>
+                            <th>Dikirim Oleh</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rsvpListBody">
+                        <!-- RSVP entries will be loaded here by JavaScript -->
+                        <tr><td colspan="5" class="text-center text-gray-500">Memuat daftar konfirmasi...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </section>
@@ -499,6 +556,192 @@
             <span class="text-content md:inline">Berikutnya</span> &rarr;
         </a>
     </div>
+
+    <!-- Firebase SDK (Moved to bottom) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"; // Added where, getDocs
+
+        // Firebase Configuration (DO NOT CHANGE - provided by Canvas environment)
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let currentUserId = null;
+        let isAuthReady = false;
+
+        // Sign in anonymously or with custom token
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                console.log("Authenticated as:", currentUserId);
+            } else {
+                if (typeof __initial_auth_token !== 'undefined') {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                        currentUserId = auth.currentUser.uid;
+                        console.log("Signed in with custom token:", currentUserId);
+                    } catch (error) {
+                        console.error("Error signing in with custom token:", error);
+                        await signInAnonymously(auth);
+                        currentUserId = auth.currentUser.uid;
+                        console.log("Signed in anonymously (fallback):", currentUserId);
+                    }
+                } else {
+                    await signInAnonymously(auth);
+                    currentUserId = auth.currentUser.uid;
+                    console.log("Signed in anonymously:", currentUserId);
+                }
+            }
+            isAuthReady = true;
+            // Ensure userIdDisplay exists before accessing innerText
+            const userIdDisplayElement = document.getElementById('userIdDisplay');
+            if (userIdDisplayElement) {
+                userIdDisplayElement.innerText = `ID Pengguna: ${currentUserId}`;
+            }
+            // Once authenticated, load RSVP list
+            if (currentUserId) {
+                loadRsvpList();
+            }
+        });
+
+        // Function to load RSVP list from Firestore
+        function loadRsvpList() {
+            const rsvpListBody = document.getElementById('rsvpListBody');
+            if (!rsvpListBody) return; // Ensure element exists
+
+            // Listen for real-time updates to the 'rsvps' collection
+            // Data will be stored in /artifacts/{appId}/public/data/rsvps
+            const rsvpsCollectionRef = collection(db, `artifacts/${appId}/public/data/rsvps`);
+            const q = query(rsvpsCollectionRef); 
+
+            onSnapshot(q, (snapshot) => {
+                rsvpListBody.innerHTML = ''; // Clear existing rows
+                if (snapshot.empty) {
+                    const noDataRow = rsvpListBody.insertRow();
+                    const cell = noDataRow.insertCell();
+                    cell.colSpan = 5;
+                    cell.classList.add('text-center', 'text-gray-500');
+                    cell.innerText = 'Belum ada konfirmasi kehadiran.';
+                    return;
+                }
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const row = rsvpListBody.insertRow();
+
+                    const nameCell = row.insertCell();
+                    nameCell.innerText = data.name || 'Anonim';
+
+                    const guestsCell = row.insertCell();
+                    guestsCell.innerText = data.guests || '-';
+
+                    const attendanceCell = row.insertCell();
+                    attendanceCell.innerText = data.attendance === 'yes' ? 'Hadir' : (data.attendance === 'no' ? 'Tidak Hadir' : '-');
+                    attendanceCell.classList.add(data.attendance === 'yes' ? 'status-yes' : 'status-no');
+
+                    const messageCell = row.insertCell();
+                    messageCell.innerText = data.message || '-';
+
+                    // Optional: Display the user ID who submitted this RSVP
+                    const submittedByCell = row.insertCell();
+                    submittedByCell.innerText = data.userId ? `${data.userId.substring(0, 8)}...` : '-'; // Shorten for display
+                    submittedByCell.title = data.userId || ''; // Full ID on hover
+                });
+            }, (error) => {
+                console.error("Error fetching RSVP data:", error);
+                rsvpListBody.innerHTML = `<tr><td colspan="5" class="text-center text-red-500">Gagal memuat daftar konfirmasi.</td></tr>`;
+            });
+        }
+
+        // Override submitRsvp function to save to Firestore
+        window.submitRsvpToFirestore = async function() {
+            const submitBtn = document.getElementById('submitRsvp');
+            submitBtn.disabled = true; // Disable button to prevent double clicks
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = 'Mengirim...'; // Show loading state
+
+            const name = document.getElementById('rsvp-name').value;
+            const guests = document.getElementById('rsvp-guests').value;
+            const attendance = document.getElementById('rsvp-attendance').value;
+            const message = document.getElementById('rsvp-message').value;
+
+            if (!isAuthReady || !currentUserId) {
+                showMessageBox('Autentikasi Belum Siap', 'Mohon tunggu sebentar, sistem sedang menyiapkan koneksi. Coba lagi.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+                return;
+            }
+
+            // Check existing submissions by this user
+            try {
+                const rsvpsCollectionRef = collection(db, `artifacts/${appId}/public/data/rsvps`);
+                const userRsvpsQuery = query(rsvpsCollectionRef, where("userId", "==", currentUserId));
+                const userRsvpsSnapshot = await getDocs(userRsvpsQuery);
+
+                if (userRsvpsSnapshot.size >= 2) {
+                    showMessageBox('Batas Konfirmasi Tercapai', 'Anda sudah melakukan 2 kali konfirmasi kehadiran. Konfirmasi ini tidak akan tersimpan dan terkirim. Terima kasih.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                    return; // Stop submission
+                }
+            } catch (error) {
+                console.error("Error checking existing RSVPs:", error);
+                showMessageBox('Terjadi Kesalahan', 'Gagal memeriksa konfirmasi sebelumnya. Silakan coba lagi.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+                return; // Stop submission due to error
+            }
+
+            if (!name || !guests || !attendance) {
+                showMessageBox('Data Tidak Lengkap', 'Mohon lengkapi semua kolom wajib (Nama, Jumlah Tamu, dan Kehadiran) sebelum mengirim.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+                return;
+            }
+
+            try {
+                // Add a new document with a generated ID to the 'rsvps' collection
+                // Data will be stored in /artifacts/{appId}/public/data/rsvps
+                await addDoc(collection(db, `artifacts/${appId}/public/data/rsvps`), {
+                    name: name,
+                    guests: guests,
+                    attendance: attendance,
+                    message: message,
+                    timestamp: serverTimestamp(), // Add server timestamp
+                    userId: currentUserId // Store the user ID
+                });
+
+                showMessageBox('Konfirmasi Terkirim!', 'Terima kasih atas konfirmasi kehadiran Anda. Kami menantikan kehadiran Anda di hari bahagia kami!');
+
+                // Clear the form after submission
+                document.getElementById('rsvp-name').value = '';
+                document.getElementById('rsvp-guests').value = '';
+                document.getElementById('rsvp-attendance').value = '';
+                document.getElementById('rsvp-message').value = '';
+
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                showMessageBox('Gagal Mengirim', 'Terjadi kesalahan saat mengirim konfirmasi. Silakan coba lagi.');
+            } finally {
+                submitBtn.disabled = false; // Re-enable button
+                submitBtn.innerHTML = originalBtnText; // Restore original text
+            }
+        };
+
+        // Replace the original submitRsvp handler with the Firestore version
+        // Ensure this is only attached once to prevent multiple listeners
+        const submitRsvpButton = document.getElementById('submitRsvp');
+        // Remove any existing listeners to prevent duplicates if script is re-run in dev environment
+        submitRsvpButton.removeEventListener('click', window.submitRsvpToFirestore); // Ensure it's removed if already attached
+        submitRsvpButton.addEventListener('click', window.submitRsvpToFirestore);
+
+    </script>
+    <!-- End Firebase SDK -->
 
     <script>
         // Custom Message Box Function
@@ -546,27 +789,6 @@
             closeMessageBox();
         });
 
-
-        // RSVP Submit Handler (unchanged)
-        document.getElementById('submitRsvp').addEventListener('click', function() {
-            const name = document.getElementById('rsvp-name').value;
-            const guests = document.getElementById('rsvp-guests').value;
-            const attendance = document.getElementById('rsvp-attendance').value;
-            const message = document.getElementById('rsvp-message').value;
-
-            if (!name || !guests || !attendance) {
-                showMessageBox('Data Tidak Lengkap', 'Mohon lengkapi semua kolom wajib (Nama, Jumlah Tamu, dan Kehadiran) sebelum mengirim.');
-                return;
-            }
-
-            console.log('RSVP Data:', { name, guests, attendance, message });
-            showMessageBox('Konfirmasi Terkirim!', 'Terima kasih atas konfirmasi kehadiran Anda. Kami menantikan kehadiran Anda di hari bahagia kami!');
-
-            document.getElementById('rsvp-name').value = '';
-            document.getElementById('rsvp-guests').value = '';
-            document.getElementById('rsvp-attendance').value = '';
-            document.getElementById('rsvp-message').value = '';
-        });
 
         // Gallery functionality (unchanged, kept for reference)
         const galleryModal = document.getElementById('galleryModal');
@@ -639,7 +861,7 @@
         });
 
         // Navigation buttons functionality (unchanged, kept for reference)
-        const sections = ['hero', 'details', 'couple-photos', 'decoration-photos', 'our-story', 'rsvp'];
+        const sections = ['hero', 'details', 'couple-photos', 'decoration-photos', 'our-story', 'rsvp', 'rsvp-list']; // Added rsvp-list
         let currentSectionNavIndex = 0;
 
         function updateNavButtons() {
