@@ -514,7 +514,7 @@
         </div>
     </section>
 
-    <!-- RSVP List Section (Added) -->
+    <!-- RSVP List Section -->
     <section id="rsvp-list" class="py-16 md:py-24 bg-gray-50">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl md:text-4xl section-title text-center mb-12">Daftar Konfirmasi Kehadiran</h2>
@@ -557,193 +557,34 @@
         </a>
     </div>
 
-    <!-- Firebase SDK (Moved to bottom) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, where, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"; // Added where, getDocs
-
-        // Firebase Configuration (DO NOT CHANGE - provided by Canvas environment)
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        let currentUserId = null;
-        let isAuthReady = false;
-
-        // Sign in anonymously or with custom token
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUserId = user.uid;
-                console.log("Authenticated as:", currentUserId);
-            } else {
-                if (typeof __initial_auth_token !== 'undefined') {
-                    try {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                        currentUserId = auth.currentUser.uid;
-                        console.log("Signed in with custom token:", currentUserId);
-                    } catch (error) {
-                        console.error("Error signing in with custom token:", error);
-                        await signInAnonymously(auth);
-                        currentUserId = auth.currentUser.uid;
-                        console.log("Signed in anonymously (fallback):", currentUserId);
-                    }
-                } else {
-                    await signInAnonymously(auth);
-                    currentUserId = auth.currentUser.uid;
-                    console.log("Signed in anonymously:", currentUserId);
-                }
-            }
-            isAuthReady = true;
-            // Ensure userIdDisplay exists before accessing innerText
-            const userIdDisplayElement = document.getElementById('userIdDisplay');
-            if (userIdDisplayElement) {
-                userIdDisplayElement.innerText = `ID Pengguna: ${currentUserId}`;
-            }
-            // Once authenticated, load RSVP list
-            if (currentUserId) {
-                loadRsvpList();
-            }
-        });
-
-        // Function to load RSVP list from Firestore
-        function loadRsvpList() {
-            const rsvpListBody = document.getElementById('rsvpListBody');
-            if (!rsvpListBody) return; // Ensure element exists
-
-            // Listen for real-time updates to the 'rsvps' collection
-            // Data will be stored in /artifacts/{appId}/public/data/rsvps
-            const rsvpsCollectionRef = collection(db, `artifacts/${appId}/public/data/rsvps`);
-            const q = query(rsvpsCollectionRef); 
-
-            onSnapshot(q, (snapshot) => {
-                rsvpListBody.innerHTML = ''; // Clear existing rows
-                if (snapshot.empty) {
-                    const noDataRow = rsvpListBody.insertRow();
-                    const cell = noDataRow.insertCell();
-                    cell.colSpan = 5;
-                    cell.classList.add('text-center', 'text-gray-500');
-                    cell.innerText = 'Belum ada konfirmasi kehadiran.';
-                    return;
-                }
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const row = rsvpListBody.insertRow();
-
-                    const nameCell = row.insertCell();
-                    nameCell.innerText = data.name || 'Anonim';
-
-                    const guestsCell = row.insertCell();
-                    guestsCell.innerText = data.guests || '-';
-
-                    const attendanceCell = row.insertCell();
-                    attendanceCell.innerText = data.attendance === 'yes' ? 'Hadir' : (data.attendance === 'no' ? 'Tidak Hadir' : '-');
-                    attendanceCell.classList.add(data.attendance === 'yes' ? 'status-yes' : 'status-no');
-
-                    const messageCell = row.insertCell();
-                    messageCell.innerText = data.message || '-';
-
-                    // Optional: Display the user ID who submitted this RSVP
-                    const submittedByCell = row.insertCell();
-                    submittedByCell.innerText = data.userId ? `${data.userId.substring(0, 8)}...` : '-'; // Shorten for display
-                    submittedByCell.title = data.userId || ''; // Full ID on hover
-                });
-            }, (error) => {
-                console.error("Error fetching RSVP data:", error);
-                rsvpListBody.innerHTML = `<tr><td colspan="5" class="text-center text-red-500">Gagal memuat daftar konfirmasi.</td></tr>`;
+    <!-- Main JavaScript -->
+    <script>
+        // Function to generate a UUID (Universally Unique Identifier)
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
             });
         }
 
-        // Override submitRsvp function to save to Firestore
-        window.submitRsvpToFirestore = async function() {
-            const submitBtn = document.getElementById('submitRsvp');
-            submitBtn.disabled = true; // Disable button to prevent double clicks
-            const originalBtnText = submitBtn.innerHTML;
-            submitBtn.innerHTML = 'Mengirim...'; // Show loading state
+        // Get or create a unique user ID for this browser
+        let currentUserId = localStorage.getItem('weddingInviteUserId');
+        if (!currentUserId) {
+            currentUserId = generateUUID();
+            localStorage.setItem('weddingInviteUserId', currentUserId);
+        }
+        console.log("User ID for this browser:", currentUserId);
 
-            const name = document.getElementById('rsvp-name').value;
-            const guests = document.getElementById('rsvp-guests').value;
-            const attendance = document.getElementById('rsvp-attendance').value;
-            const message = document.getElementById('rsvp-message').value;
+        // Update the userIdDisplay element
+        const userIdDisplayElement = document.getElementById('userIdDisplay');
+        if (userIdDisplayElement) {
+            userIdDisplayElement.innerText = `ID Pengguna: ${currentUserId}`;
+        } else {
+            console.warn("Element with ID 'userIdDisplay' not found.");
+        }
 
-            if (!isAuthReady || !currentUserId) {
-                showMessageBox('Autentikasi Belum Siap', 'Mohon tunggu sebentar, sistem sedang menyiapkan koneksi. Coba lagi.');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnText;
-                return;
-            }
 
-            // Check existing submissions by this user
-            try {
-                const rsvpsCollectionRef = collection(db, `artifacts/${appId}/public/data/rsvps`);
-                const userRsvpsQuery = query(rsvpsCollectionRef, where("userId", "==", currentUserId));
-                const userRsvpsSnapshot = await getDocs(userRsvpsQuery);
-
-                if (userRsvpsSnapshot.size >= 2) {
-                    showMessageBox('Batas Konfirmasi Tercapai', 'Anda sudah melakukan 2 kali konfirmasi kehadiran. Konfirmasi ini tidak akan tersimpan dan terkirim. Terima kasih.');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnText;
-                    return; // Stop submission
-                }
-            } catch (error) {
-                console.error("Error checking existing RSVPs:", error);
-                showMessageBox('Terjadi Kesalahan', 'Gagal memeriksa konfirmasi sebelumnya. Silakan coba lagi.');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnText;
-                return; // Stop submission due to error
-            }
-
-            if (!name || !guests || !attendance) {
-                showMessageBox('Data Tidak Lengkap', 'Mohon lengkapi semua kolom wajib (Nama, Jumlah Tamu, dan Kehadiran) sebelum mengirim.');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnText;
-                return;
-            }
-
-            try {
-                // Add a new document with a generated ID to the 'rsvps' collection
-                // Data will be stored in /artifacts/{appId}/public/data/rsvps
-                await addDoc(collection(db, `artifacts/${appId}/public/data/rsvps`), {
-                    name: name,
-                    guests: guests,
-                    attendance: attendance,
-                    message: message,
-                    timestamp: serverTimestamp(), // Add server timestamp
-                    userId: currentUserId // Store the user ID
-                });
-
-                showMessageBox('Konfirmasi Terkirim!', 'Terima kasih atas konfirmasi kehadiran Anda. Kami menantikan kehadiran Anda di hari bahagia kami!');
-
-                // Clear the form after submission
-                document.getElementById('rsvp-name').value = '';
-                document.getElementById('rsvp-guests').value = '';
-                document.getElementById('rsvp-attendance').value = '';
-                document.getElementById('rsvp-message').value = '';
-
-            } catch (e) {
-                console.error("Error adding document: ", e);
-                showMessageBox('Gagal Mengirim', 'Terjadi kesalahan saat mengirim konfirmasi. Silakan coba lagi.');
-            } finally {
-                submitBtn.disabled = false; // Re-enable button
-                submitBtn.innerHTML = originalBtnText; // Restore original text
-            }
-        };
-
-        // Replace the original submitRsvp handler with the Firestore version
-        // Ensure this is only attached once to prevent multiple listeners
-        const submitRsvpButton = document.getElementById('submitRsvp');
-        // Remove any existing listeners to prevent duplicates if script is re-run in dev environment
-        submitRsvpButton.removeEventListener('click', window.submitRsvpToFirestore); // Ensure it's removed if already attached
-        submitRsvpButton.addEventListener('click', window.submitRsvpToFirestore);
-
-    </script>
-    <!-- End Firebase SDK -->
-
-    <script>
         // Custom Message Box Function
         function showMessageBox(title, message, type = 'generic') {
             const messageBox = document.getElementById('messageBox');
@@ -790,7 +631,7 @@
         });
 
 
-        // Gallery functionality (unchanged, kept for reference)
+        // Gallery functionality
         const galleryModal = document.getElementById('galleryModal');
         const galleryImage = document.getElementById('galleryImage');
         const galleryPrevBtn = document.getElementById('galleryPrevBtn');
@@ -860,8 +701,8 @@
             }
         });
 
-        // Navigation buttons functionality (unchanged, kept for reference)
-        const sections = ['hero', 'details', 'couple-photos', 'decoration-photos', 'our-story', 'rsvp', 'rsvp-list']; // Added rsvp-list
+        // Navigation buttons functionality
+        const sections = ['hero', 'details', 'couple-photos', 'decoration-photos', 'our-story', 'rsvp', 'rsvp-list']; 
         let currentSectionNavIndex = 0;
 
         function updateNavButtons() {
@@ -984,6 +825,150 @@
             playIcon.style.display = 'none';
             pauseIcon.style.display = 'block';
         });
+
+        // RSVP Submission to Google Sheets
+        document.getElementById('submitRsvp').addEventListener('click', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const submitBtn = this;
+            submitBtn.disabled = true; // Disable button to prevent double clicks
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = 'Mengirim...'; // Show loading state
+
+            const name = document.getElementById('rsvp-name').value;
+            const guests = document.getElementById('rsvp-guests').value;
+            const attendance = document.getElementById('rsvp-attendance').value;
+            const message = document.getElementById('rsvp-message').value;
+
+            if (!name || !guests || !attendance) {
+                showMessageBox('Data Tidak Lengkap', 'Mohon lengkapi semua kolom wajib (Nama, Jumlah Tamu, dan Kehadiran) sebelum mengirim.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+                return;
+            }
+
+            // PASTIKAN URL INI SAMA PERSIS DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA SETELAH DI-DEPLOY!
+            const GOOGLE_SHEET_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzDExIBL2UyJmIGCHDo_wkA74xR0okERn1HRhFQhyh8HWHN0dehlKDPORuytZYNDqYbLA/exec'; 
+            console.log("Mengirim data ke:", GOOGLE_SHEET_WEB_APP_URL); // Log the URL being used
+
+            const formData = new FormData();
+            formData.append('timestamp', new Date().toLocaleString());
+            formData.append('name', name);
+            formData.append('guests', guests);
+            formData.append('attendance', attendance);
+            formData.append('message', message);
+            formData.append('userId', currentUserId); // Send the unique user ID
+
+            try {
+                const response = await fetch(GOOGLE_SHEET_WEB_APP_URL, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                // Check if the HTTP response itself was successful
+                if (!response.ok) {
+                    const errorText = await response.text(); // Get raw text for debugging
+                    throw new Error(`HTTP error! status: ${response.status}. Response: ${errorText.substring(0, 200)}...`);
+                }
+
+                // Attempt to parse JSON response
+                let result;
+                try {
+                    result = await response.json(); 
+                } catch (jsonError) {
+                    const textResponse = await response.text();
+                    console.error("Failed to parse JSON response, raw text:", textResponse);
+                    throw new Error(`Respon server bukan JSON atau kosong: ${textResponse.substring(0, 100)}...`);
+                }
+                
+
+                if (result.status === 'success') {
+                    showMessageBox('Konfirmasi Terkirim!', result.message);
+                    // Clear the form after submission
+                    document.getElementById('rsvp-name').value = '';
+                    document.getElementById('rsvp-guests').value = '';
+                    document.getElementById('rsvp-attendance').value = '';
+                    document.getElementById('rsvp-message').value = '';
+                    // Reload RSVP list after successful submission
+                    loadRsvpList(); 
+                } else {
+                    // This handles messages from Apps Script like the 2-submission limit
+                    showMessageBox('Gagal Mengirim', result.message || 'Terjadi kesalahan saat mengirim konfirmasi. Silakan coba lagi.');
+                }
+
+            } catch (error) {
+                console.error("Error submitting to Google Sheet:", error);
+                showMessageBox('Gagal Mengirim', `Terjadi kesalahan koneksi atau server. Pastikan URL Google Apps Script benar dan dapat diakses publik. Detail: ${error.message}`);
+            } finally {
+                submitBtn.disabled = false; // Re-enable button
+                submitBtn.innerHTML = originalBtnText; // Restore original text
+            }
+        });
+
+        // Function to load RSVP list from Google Sheets
+        async function loadRsvpList() {
+            const rsvpListBody = document.getElementById('rsvpListBody');
+            if (!rsvpListBody) return;
+
+            rsvpListBody.innerHTML = `<tr><td colspan="5" class="text-center text-gray-500">Memuat daftar konfirmasi...</td></tr>`;
+
+            // PASTIKAN URL INI SAMA PERSIS DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA SETELAH DI-DEPLOY!
+            const GOOGLE_SHEET_WEB_APP_URL_GET = 'https://script.google.com/macros/s/AKfycbzDExIBL2UyJmIGCHDo_wkA74xR0okERn1HRhFQhyh8HWHN0dehlKDPORuytZYNDqYbLA/exec'; // Use the same URL as POST endpoint
+
+            try {
+                const response = await fetch(GOOGLE_SHEET_WEB_APP_URL_GET, {
+                    method: 'GET',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.status === 'success' && result.data) {
+                    rsvpListBody.innerHTML = ''; // Clear loading message
+                    if (result.data.length === 0) {
+                        const noDataRow = rsvpListBody.insertRow();
+                        const cell = noDataRow.insertCell();
+                        cell.colSpan = 5;
+                        cell.classList.add('text-center', 'text-gray-500');
+                        cell.innerText = 'Belum ada konfirmasi kehadiran.';
+                        return;
+                    }
+
+                    result.data.forEach((data) => {
+                        const row = rsvpListBody.insertRow();
+
+                        const nameCell = row.insertCell();
+                        nameCell.innerText = data.nama || 'Anonim'; // Use lowercase key from Apps Script
+
+                        const guestsCell = row.insertCell();
+                        guestsCell.innerText = data.jumlah_tamu || '-'; // Use lowercase key from Apps Script
+
+                        const attendanceCell = row.insertCell();
+                        attendanceCell.innerText = data.kehadiran === 'yes' ? 'Hadir' : (data.kehadiran === 'no' ? 'Tidak Hadir' : '-');
+                        attendanceCell.classList.add(data.kehadiran === 'yes' ? 'status-yes' : 'status-no');
+
+                        const messageCell = row.insertCell();
+                        messageCell.innerText = data.pesan_doa || '-'; // Use lowercase key from Apps Script
+
+                        const submittedByCell = row.insertCell();
+                        submittedByCell.innerText = data.user_id ? `${data.user_id.substring(0, 8)}...` : '-'; // Use lowercase key
+                        submittedByCell.title = data.user_id || '';
+                    });
+                } else {
+                    rsvpListBody.innerHTML = `<tr><td colspan="5" class="text-center text-red-500">Gagal memuat daftar konfirmasi: ${result.message || 'Kesalahan tidak diketahui'}</td></tr>`;
+                }
+
+            } catch (error) {
+                console.error("Error loading RSVP list from Google Sheet:", error);
+                rsvpListBody.innerHTML = `<tr><td colspan="5" class="text-center text-red-500">Gagal memuat daftar konfirmasi. Pastikan Apps Script di-deploy dengan benar. Detail: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Load RSVP list on page load
+        window.addEventListener('load', loadRsvpList);
 
     </script>
 </body>
