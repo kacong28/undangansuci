@@ -848,7 +848,7 @@
             }
 
             // PASTIKAN URL INI SAMA PERSIS DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA SETELAH DI-DEPLOY!
-            const GOOGLE_SHEET_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzDExIBL2UyJmIGCHDo_wkA74xR0okERn1HRhFQhyh8HWHN0dehlKDPORuytZYNDqYbLA/exec'; 
+            const GOOGLE_SHEET_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz5ut0WQunouN29f6I5933LDZk2TEZ1u35E1Re1zoJ1ERJ9y47H-ndPVUecKHTf7PbPFA/exec'; 
             console.log("Mengirim data ke:", GOOGLE_SHEET_WEB_APP_URL); // Log the URL being used
 
             const formData = new FormData();
@@ -913,7 +913,7 @@
             rsvpListBody.innerHTML = `<tr><td colspan="5" class="text-center text-gray-500">Memuat daftar konfirmasi...</td></tr>`;
 
             // PASTIKAN URL INI SAMA PERSIS DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA SETELAH DI-DEPLOY!
-            const GOOGLE_SHEET_WEB_APP_URL_GET = 'https://script.google.com/macros/s/AKfycbzDExIBL2UyJmIGCHDo_wkA74xR0okERn1HRhFQhyh8HWHN0dehlKDPORuytZYNDqYbLA/exec'; // Use the same URL as POST endpoint
+            const GOOGLE_SHEET_WEB_APP_URL_GET = 'https://script.google.com/macros/s/AKfycbz5ut0WQunouN29f6I5933LDZk2TEZ1u35E1Re1zoJ1ERJ9y47H-ndPVUecKHTf7PbPFA/exec'; // Use the same URL as POST endpoint
 
             try {
                 const response = await fetch(GOOGLE_SHEET_WEB_APP_URL_GET, {
