@@ -906,65 +906,81 @@
         });
 
         // Function to load RSVP list from Google Sheets
+        
+        let currentPage = 1;
+        const rowsPerPage = 5;
+
         async function loadRsvpList() {
-            const rsvpListBody = document.getElementById('rsvpListBody');
-            if (!rsvpListBody) return;
+        const rsvpListBody = document.getElementById('rsvpListBody');
+        const rsvpTable = document.querySelector('.rsvp-table');
 
-            rsvpListBody.innerHTML = `<tr><td colspan="5" class="text-center text-gray-500">Memuat daftar konfirmasi...</td></tr>`;
+        if (!rsvpListBody) return;
 
-            // PASTIKAN URL INI SAMA PERSIS DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA SETELAH DI-DEPLOY!
-            const GOOGLE_SHEET_WEB_APP_URL_GET = 'https://script.google.com/macros/s/AKfycbz5ut0WQunouN29f6I5933LDZk2TEZ1u35E1Re1zoJ1ERJ9y47H-ndPVUecKHTf7PbPFA/exec'; // Use the same URL as POST endpoint
+        rsvpListBody.innerHTML = `<tr><td colspan="5" class="text-center text-gray-500">Memuat daftar konfirmasi...</td></tr>`;
 
-            try {
-                const response = await fetch(GOOGLE_SHEET_WEB_APP_URL_GET, {
-                    method: 'GET',
+        const GOOGLE_SHEET_WEB_APP_URL_GET = 'https://script.google.com/macros/s/AKfycbz5ut0WQunouN29f6I5933LDZk2TEZ1u35E1Re1zoJ1ERJ9y47H-ndPVUecKHTf7PbPFA/exec';
+
+        try {
+            const response = await fetch(GOOGLE_SHEET_WEB_APP_URL_GET, {
+            method: 'GET',
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const result = await response.json();
+
+            if (result.status === 'success' && result.data) {
+            const allData = result.data;
+            if (allData.length === 0) {
+                rsvpListBody.innerHTML = `<tr><td colspan="5" class="text-center text-gray-500">Belum ada konfirmasi kehadiran.</td></tr>`;
+                return;
+            }
+
+            const totalPages = Math.ceil(allData.length / rowsPerPage);
+
+            function renderPage(page) {
+                currentPage = page;
+                rsvpListBody.innerHTML = '';
+                const start = (page - 1) * rowsPerPage;
+                const end = start + rowsPerPage;
+                const pageData = allData.slice(start, end);
+
+                pageData.forEach(data => {
+                const row = rsvpListBody.insertRow();
+
+                row.insertCell().innerText = data.nama || 'Anonim';
+                row.insertCell().innerText = data.jumlah_tamu || '-';
+                const attendanceCell = row.insertCell();
+                attendanceCell.innerText = data.kehadiran === 'yes' ? 'Hadir' : (data.kehadiran === 'no' ? 'Tidak Hadir' : '-');
+                attendanceCell.classList.add(data.kehadiran === 'yes' ? 'status-yes' : 'status-no');
+                row.insertCell().innerText = data.pesan_doa || '-';
+                const userIdCell = row.insertCell();
+                userIdCell.innerText = data.user_id ? `${data.user_id.substring(0, 8)}...` : '-';
+                userIdCell.title = data.user_id || '';
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-
-                if (result.status === 'success' && result.data) {
-                    rsvpListBody.innerHTML = ''; // Clear loading message
-                    if (result.data.length === 0) {
-                        const noDataRow = rsvpListBody.insertRow();
-                        const cell = noDataRow.insertCell();
-                        cell.colSpan = 5;
-                        cell.classList.add('text-center', 'text-gray-500');
-                        cell.innerText = 'Belum ada konfirmasi kehadiran.';
-                        return;
-                    }
-
-                    result.data.forEach((data) => {
-                        const row = rsvpListBody.insertRow();
-
-                        const nameCell = row.insertCell();
-                        nameCell.innerText = data.nama || 'Anonim'; // Use lowercase key from Apps Script
-
-                        const guestsCell = row.insertCell();
-                        guestsCell.innerText = data.jumlah_tamu || '-'; // Use lowercase key from Apps Script
-
-                        const attendanceCell = row.insertCell();
-                        attendanceCell.innerText = data.kehadiran === 'yes' ? 'Hadir' : (data.kehadiran === 'no' ? 'Tidak Hadir' : '-');
-                        attendanceCell.classList.add(data.kehadiran === 'yes' ? 'status-yes' : 'status-no');
-
-                        const messageCell = row.insertCell();
-                        messageCell.innerText = data.pesan_doa || '-'; // Use lowercase key from Apps Script
-
-                        const submittedByCell = row.insertCell();
-                        submittedByCell.innerText = data.user_id ? `${data.user_id.substring(0, 8)}...` : '-'; // Use lowercase key
-                        submittedByCell.title = data.user_id || '';
-                    });
-                } else {
-                    rsvpListBody.innerHTML = `<tr><td colspan="5" class="text-center text-red-500">Gagal memuat daftar konfirmasi: ${result.message || 'Kesalahan tidak diketahui'}</td></tr>`;
-                }
-
-            } catch (error) {
-                console.error("Error loading RSVP list from Google Sheet:", error);
-                rsvpListBody.innerHTML = `<tr><td colspan="5" class="text-center text-red-500">Gagal memuat daftar konfirmasi. Pastikan Apps Script di-deploy dengan benar. Detail: ${error.message}</td></tr>`;
+                renderPaginationControls(totalPages);
             }
+
+            function renderPaginationControls(totalPages) {
+                let paginationHtml = `<tr><td colspan="5" class="text-center pt-4">`;
+                for (let i = 1; i <= totalPages; i++) {
+                paginationHtml += `<button onclick="goToPage(${i})" class="inline-block mx-1 px-3 py-1 rounded-full text-sm font-medium ${i === currentPage ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-800'}">${i}</button>`;
+                }
+                paginationHtml += `</td></tr>`;
+                rsvpListBody.insertAdjacentHTML('beforeend', paginationHtml);
+            }
+
+            window.goToPage = renderPage; // Biar bisa dipanggil dari onclick
+            renderPage(currentPage); // Awal tampilkan halaman 1
+
+            } else {
+            rsvpListBody.innerHTML = `<tr><td colspan="5" class="text-center text-red-500">Gagal memuat daftar konfirmasi: ${result.message || 'Kesalahan tidak diketahui'}</td></tr>`;
+            }
+
+        } catch (error) {
+            console.error("Error loading RSVP list:", error);
+            rsvpListBody.innerHTML = `<tr><td colspan="5" class="text-center text-red-500">Gagal memuat daftar konfirmasi. ${error.message}</td></tr>`;
+        }
         }
 
         // Load RSVP list on page load
